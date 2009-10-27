@@ -36,19 +36,19 @@
   <ItemGroup>
     <Reference Include="Growl.Connector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=980c2339411be384, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Growl for Windows\Growl.Connector.dll</HintPath>
+      <HintPath>..\References\Growl.Connector.dll</HintPath>
     </Reference>
     <Reference Include="Growl.CoreLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=13e59d82e007b064, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Growl for Windows\Growl.CoreLibrary.dll</HintPath>
+      <HintPath>..\References\Growl.CoreLibrary.dll</HintPath>
     </Reference>
     <Reference Include="ManagedHttp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ManagedHttp\ManagedHttp\bin\Debug\ManagedHttp.dll</HintPath>
+      <HintPath>..\References\ManagedHttp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Downloaded\Json.NET v3.5b4\Bin\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
