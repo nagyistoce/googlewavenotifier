@@ -54,6 +54,8 @@ namespace GoogleWaveNotifier
         {
             lock (_pollLocker)
             {
+                if (_pollTimer == null)
+                    return;
                 _pollTimer.Stop();
                 _pollTimer.Start();
                 PollNow();
@@ -64,6 +66,8 @@ namespace GoogleWaveNotifier
         {
             lock (_pollLocker)
             {
+                if (_pollTimer == null)
+                    return;
                 _pollTimer.Stop();
             }
         }
@@ -85,6 +89,8 @@ namespace GoogleWaveNotifier
         {
             lock (_pollLocker)
             {
+                if (_pollTimer == null)
+                    return;
                 _pollTimer.Stop();
                 try
                 {
@@ -170,10 +176,13 @@ namespace GoogleWaveNotifier
 
         public void Dispose()
         {
-            _pollTimer.Elapsed -= TimerElapsed;
-            _pollTimer.Stop();
-            _pollTimer.Dispose();
-            _pollTimer = null;
+            lock (_pollLocker)
+            {
+                _pollTimer.Elapsed -= TimerElapsed;
+                _pollTimer.Stop();
+                _pollTimer.Dispose();
+                _pollTimer = null;
+            }
         }
 
         #region WaveChanged Event
