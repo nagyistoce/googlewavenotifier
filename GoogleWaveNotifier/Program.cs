@@ -283,7 +283,7 @@ namespace GoogleWaveNotifier
                     g.InterpolationMode = InterpolationMode.HighQualityBilinear;
                     g.SmoothingMode = SmoothingMode.AntiAlias;
 
-                    string gwaveIcon = status.WaveEnabled ? "gwave.png" : "gwave_disabled.png";
+                    string gwaveIcon = status.WaveEnabled ? "notify-googlewave.png" : "notify-googlewave-disabled.png";
                     using (Bitmap overlay = new Bitmap(gwaveIcon))
                     {
                         g.DrawImageUnscaled(overlay, 0, 0);
@@ -291,7 +291,7 @@ namespace GoogleWaveNotifier
 
                     if (status.GrowlEnabled)
                     {
-                        using (Bitmap overlay = new Bitmap("growl_overlay.png"))
+                        using (Bitmap overlay = new Bitmap("notify-growl.png"))
                         {
                             g.DrawImageUnscaled(overlay, 0, 0);
                         }
