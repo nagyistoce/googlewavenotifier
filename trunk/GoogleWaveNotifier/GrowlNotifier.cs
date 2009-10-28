@@ -3,22 +3,26 @@ using System.IO;
 using Growl.Connector;
 using Growl.CoreLibrary;
 using System.Threading;
+using GoogleWaveNotifier.Properties;
 
 namespace GoogleWaveNotifier
 {
     public class GrowlNotifier
     {
         private GrowlConnector _connector;
-        private Resource _icon;
         public bool IsRegistered { get; private set; }
         private object _responseLocker = new object();
         private Response _lastResponse = null;
 
+        private Resource _googlewaveicon;
+        private Resource _googlewavenotifiericon;
+
         public GrowlNotifier()
         {
-            if (File.Exists("icon.png"))
-                _icon = new BinaryData(File.ReadAllBytes("icon.png"));
-
+            if (File.Exists("googlewave.png"))
+                _googlewaveicon = new BinaryData(File.ReadAllBytes("googlewave.png"));
+            if (File.Exists("googlewavenotifier.png"))
+                _googlewavenotifiericon = new BinaryData(File.ReadAllBytes("googlewavenotifier.png"));
             _connector = new GrowlConnector();
             _connector.ErrorResponse += ConnectorErrorResponse;
             _connector.OKResponse += ConnectorOkResponse;
@@ -35,10 +39,13 @@ namespace GoogleWaveNotifier
         {
             lock (_responseLocker)
             {
-                _connector.Register(new Application("Google Wave Notifier"), new[]
+                _connector.Register(new Application("Google Wave Notifier")
+                                        {
+                                            Icon = _googlewavenotifiericon
+                                        }, new[]
                                                                                 {
-                                                                                    new NotificationType("unreadwave", "Unread wave", _icon, true),
-                                                                                    new NotificationType("error", "Error", _icon, true),
+                                                                                    new NotificationType("unreadwave", "Unread wave", _googlewaveicon, true),
+                                                                                    new NotificationType("error", "Error", _googlewaveicon, true),
                                                                                 });
                 _lastResponse = null;
                 Monitor.Wait(_responseLocker, 1000);
@@ -72,12 +79,14 @@ namespace GoogleWaveNotifier
         public void Notify(Wave wave)
         {
             var context = new CallbackContext("https://wave.google.com/wave/#restored:wave:" + Uri.EscapeDataString(wave.Id));
-            Notify(new Notification("Google Wave Notifier", "unreadwave", _icon, wave.Title, wave.Summary), context);
+            string title = string.IsNullOrEmpty(wave.Title) ? "-" : wave.Title;
+            string description = string.IsNullOrEmpty(wave.Summary) ? "-" : wave.Summary;
+            Notify(new Notification("Google Wave Notifier", "unreadwave", _googlewaveicon, title, description), context);
         }
 
         public void Notify(Exception exception)
         {
-            Notify(new Notification("Google Wave Notifier", "unreadwave", _icon, "An error occured", exception.Message));
+            Notify(new Notification("Google Wave Notifier", "unreadwave", _googlewaveicon, "An error occured", exception.Message));
         }
 
         public void Notify(Notification notification)
@@ -118,8 +127,6 @@ namespace GoogleWaveNotifier
         }
         public event EventHandler<EventArgs> RegisteringFailed;
         #endregion
-	
-	
         #region NotificationFailed Event
         protected virtual void OnNotificationFailed(NotificationEventArgs e)
         {
