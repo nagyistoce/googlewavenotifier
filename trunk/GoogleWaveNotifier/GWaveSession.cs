@@ -45,7 +45,7 @@ namespace GoogleWaveNotifier
                                            new KeyValuePair<string, string>("Email", email),
                                            new KeyValuePair<string, string>("Passwd", password),
                                            new KeyValuePair<string, string>("service", "wave"),
-                                           new KeyValuePair<string, string>("source", "googlewavenotify"));
+                                           new KeyValuePair<string, string>("source", "googlewavenotifier"));
             if (response.Header.StatusCode == 403)
                 throw new AuthenticationException("Invalid username or password.");
             var responseText = response.Body.ReadAllText();

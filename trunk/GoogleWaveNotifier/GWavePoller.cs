@@ -124,10 +124,10 @@ namespace GoogleWaveNotifier
                 UnreadWaves.AddRange(newWaves);
 
                 if (UnreadWaves.Count == 0)
-                    Trace.WriteLine("No unread waves.");
+                    Trace.WriteLine("No unread waves.", "Poller");
                 else
                 {
-                    Trace.WriteLine(string.Format("{0} unread waves.", UnreadWaves.Count));
+                    Trace.WriteLine(string.Format("{0} unread waves.", UnreadWaves.Count), "Poller");
                     if (newWaves.Count > 0)
                     {
                         foreach (Wave wave in newWaves)

@@ -3,10 +3,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using GoogleWaveNotifier.Properties;
+using System.Configuration;
 
 namespace GoogleWaveNotifier
 {
@@ -17,6 +19,7 @@ namespace GoogleWaveNotifier
         private static GWavePoller _poller;
         private static GrowlNotifier _growl;
         private static PreferencesForm _preferencesForm;
+        private static object _pollLocker = new object();
 
         #region Information
         public static string Title
@@ -77,14 +80,28 @@ namespace GoogleWaveNotifier
 
         private static void Main(string[] args)
         {
+            // Upgrade the configuration file if this is the first run (for this version).
+            if (Settings.Default.FirstRun)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.FirstRun = false;
+                Settings.Default.Save();
+            }
+
+            // Load the settings.
+            Settings.Default.SettingsSaving += SettingsSaving;
+
             Application.EnableVisualStyles();
+
+            // Initialize notify icon.
             _notifyIcon = new NotifyIcon
                               {
                                   Text = Title,
                                   Visible = true
                               };
-            _notifyIcon.DoubleClick += OpenGoogleWaveClicked;
+            _notifyIcon.MouseDoubleClick += NotifyIconDoubleClick;
 
+            // Initialize notify-menu.
             _notifyIcon.ContextMenuStrip = new ContextMenuStrip()
                                                {
                                                    ShowImageMargin = false
@@ -99,45 +116,73 @@ namespace GoogleWaveNotifier
                 new ToolStripMenuItem("Exit", null, ExitClicked)
             });
 
-            Settings.Default.SettingsSaving += SettingsSaving;
-
+            // Initialize Growl (and register).
             _growl = new GrowlNotifier();
             _growl.Registered += GrowlRegistered;
             _growl.RegisteringFailed += GrowlRegisteringFailed;
             _growl.NotificationFailed += GrowlNotificationFailed;
+
             UpdateIcon();
 
-            StartPolling();
+            InitializeSettings();
+
+            // Start application loop.
             Application.Run();
+
+            // Application.Exit called.
+
             StopPolling();
             _notifyIcon.Dispose();
         }
 
-        static void GrowlRegistered(object sender, EventArgs e)
+        #region Growl
+        private static void GrowlRegistered(object sender, EventArgs e)
         {
+            Trace.WriteLine("Registered successfully", "Growl");
             UpdateIcon();
         }
 
-        static void GrowlRegisteringFailed(object sender, EventArgs e)
+        private static void GrowlRegisteringFailed(object sender, EventArgs e)
         {
+            Trace.WriteLine("Registering failed", "Growl");
             UpdateIcon();
         }
 
-        static void GrowlNotificationFailed(object sender, NotificationEventArgs e)
+        private static void GrowlNotificationFailed(object sender, NotificationEventArgs e)
         {
             // As a fallback, notification will be displayed using 'BalloonTips'...
+            Trace.WriteLine(string.Format("Notification failed: Title: \"{0}\", Summary: \"{1}\"", e.Notification.Title, e.Notification.Text), "Growl");
             _notifyIcon.ShowBalloonTip(10000, e.Notification.Title, e.Notification.Text, ToolTipIcon.Info);
             UpdateIcon();
         }
+        #endregion
 
+        #region Settings
         private static void SettingsSaving(object sender, CancelEventArgs e)
         {
+            InitializeSettings();
+        }
+
+        private static void InitializeSettings()
+        {
+            if (Settings.Default.EnableLog)
+                TraceLogger.Enable();
+            else
+                TraceLogger.Disable();
             StartPolling();
+        }
+        #endregion
+
+        #region Notify menu
+        static void NotifyIconDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                OpenGoogleWaveClicked(sender, e);
         }
 
         private static void OpenGoogleWaveClicked(object sender, EventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(delegate { Process.Start("https://wave.google.com/"); });
+            Utilities.Execute("https://wave.google.com/");
         }
 
         private static void PollerWaveChanged(object sender, WaveEventArgs e)
@@ -158,10 +203,13 @@ namespace GoogleWaveNotifier
 
         private static void UpdateNowClicked(object sender, EventArgs e)
         {
-            if (_poller != null)
+            lock (_pollLocker)
             {
-                _poller.UnreadWaves.Clear();
-                _poller.PollNow();
+                if (_poller != null)
+                {
+                    _poller.UnreadWaves.Clear();
+                    _poller.PollNow();
+                }
             }
         }
 
@@ -183,36 +231,48 @@ namespace GoogleWaveNotifier
         {
             Application.Exit();
         }
+        #endregion
 
+        #region Poller
         private static void StartPolling()
         {
-            StopPolling();
-            if (string.IsNullOrEmpty(Settings.Default.Email) || string.IsNullOrEmpty(Settings.Default.Password))
+            lock (_pollLocker)
             {
-                UpdateIcon();
-                return;
-            }
-            _session = new GWaveSession
-                           {
-                               Email = Settings.Default.Email,
-                               Password = Settings.Default.Password
-                           };
+                StopPolling();
+                if (string.IsNullOrEmpty(Settings.Default.Email) || string.IsNullOrEmpty(Settings.Default.Password))
+                {
+                    UpdateIcon();
+                    return;
+                }
+                _session = new GWaveSession
+                               {
+                                   Email = Settings.Default.Email,
+                                   Password = Settings.Default.GetPassword()
+                               };
 
-            _poller = new GWavePoller(_session)
-                          {
-                              PollTime = Settings.Default.PollInterval
-                          };
-            _poller.WaveChanged += PollerWaveChanged;
-            _poller.Polled += PollerPolled;
-            _poller.PollFailed += PollerFailed;
-            _poller.PollNow();
+                _poller = new GWavePoller(_session)
+                              {
+                                  PollTime = Settings.Default.PollInterval
+                              };
+                _poller.WaveChanged += PollerWaveChanged;
+                _poller.Polled += PollerPolled;
+                _poller.PollFailed += PollerFailed;
+            }
+            ThreadPool.QueueUserWorkItem(delegate
+                                         {
+                                             lock (_pollLocker)
+                                             {
+                                                 if (_poller != null)
+                                                     _poller.PollNow();
+                                             }
+                                         });
         }
 
         private static void PollerFailed(object sender, ExceptionEventArgs e)
         {
             UpdateIcon();
             _growl.Notify(e.Exception);
-            Trace.WriteLine(e.Exception.ToString());
+            Trace.WriteLine(e.Exception.ToString(), "Poller");
         }
 
         private static void PollerPolled(object sender, EventArgs e)
@@ -222,18 +282,23 @@ namespace GoogleWaveNotifier
 
         private static void StopPolling()
         {
-            if (_poller != null)
+            lock (_pollLocker)
             {
-                _poller.WaveChanged -= PollerWaveChanged;
-                _poller.Polled -= PollerPolled;
-                _poller.PollFailed -= PollerFailed;
-                _poller.Dispose();
-                _poller = null;
+                if (_poller != null)
+                {
+                    _poller.WaveChanged -= PollerWaveChanged;
+                    _poller.Polled -= PollerPolled;
+                    _poller.PollFailed -= PollerFailed;
+                    _poller.Dispose();
+                    _poller = null;
+                }
+                _session = null;
             }
-            _session = null;
             UpdateIcon();
         }
+        #endregion
 
+        #region Notify icon
         private struct IconState
         {
             public bool WaveEnabled;
@@ -246,6 +311,8 @@ namespace GoogleWaveNotifier
 
         public static void UpdateIcon()
         {
+            if (_notifyIcon == null)
+                return;
             lock (_notifyIcon)
             {
                 IconState status;
@@ -332,5 +399,6 @@ namespace GoogleWaveNotifier
             }
             return result;
         }
+        #endregion
     }
 }

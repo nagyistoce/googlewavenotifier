@@ -49,6 +49,8 @@
             this.websiteLink = new System.Windows.Forms.LinkLabel();
             this.titleLabel = new System.Windows.Forms.Label();
             this.iconBox = new System.Windows.Forms.PictureBox();
+            this.enableLoggingBox = new System.Windows.Forms.CheckBox();
+            this.logLink = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pollingIntervalBox)).BeginInit();
             this.tabControl.SuspendLayout();
             this.accountTab.SuspendLayout();
@@ -189,6 +191,8 @@
             // 
             // behaviourTab
             // 
+            this.behaviourTab.Controls.Add(this.logLink);
+            this.behaviourTab.Controls.Add(this.enableLoggingBox);
             this.behaviourTab.Controls.Add(this.autoStartBox);
             this.behaviourTab.Controls.Add(this.label2);
             this.behaviourTab.Controls.Add(this.label1);
@@ -196,7 +200,7 @@
             this.behaviourTab.Location = new System.Drawing.Point(4, 22);
             this.behaviourTab.Name = "behaviourTab";
             this.behaviourTab.Padding = new System.Windows.Forms.Padding(3);
-            this.behaviourTab.Size = new System.Drawing.Size(296, 143);
+            this.behaviourTab.Size = new System.Drawing.Size(296, 104);
             this.behaviourTab.TabIndex = 1;
             this.behaviourTab.Text = "Behaviour";
             this.behaviourTab.UseVisualStyleBackColor = true;
@@ -284,6 +288,27 @@
             this.iconBox.TabIndex = 0;
             this.iconBox.TabStop = false;
             // 
+            // enableLoggingBox
+            // 
+            this.enableLoggingBox.AutoSize = true;
+            this.enableLoggingBox.Location = new System.Drawing.Point(10, 56);
+            this.enableLoggingBox.Name = "enableLoggingBox";
+            this.enableLoggingBox.Size = new System.Drawing.Size(96, 17);
+            this.enableLoggingBox.TabIndex = 3;
+            this.enableLoggingBox.Text = "Enable logging";
+            this.enableLoggingBox.UseVisualStyleBackColor = true;
+            // 
+            // logLink
+            // 
+            this.logLink.AutoSize = true;
+            this.logLink.Location = new System.Drawing.Point(170, 57);
+            this.logLink.Name = "logLink";
+            this.logLink.Size = new System.Drawing.Size(120, 13);
+            this.logLink.TabIndex = 4;
+            this.logLink.TabStop = true;
+            this.logLink.Text = "GoogleWaveNotifier.log";
+            this.logLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.logLinkClicked);
+            // 
             // PreferencesForm
             // 
             this.AcceptButton = this.okButton;
@@ -335,5 +360,7 @@
         private System.Windows.Forms.Label authorLabel;
         private System.Windows.Forms.Label descriptionLabel;
         private System.Windows.Forms.LinkLabel growlForWindowsLink;
+        private System.Windows.Forms.LinkLabel logLink;
+        private System.Windows.Forms.CheckBox enableLoggingBox;
     }
 }
