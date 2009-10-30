@@ -51,6 +51,7 @@
       <HintPath>..\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -69,6 +70,7 @@
     <Compile Include="AssemblyAuthorAttribute.cs" />
     <Compile Include="AutoStart.cs" />
     <Compile Include="ExceptionEventArgs.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GrowlNotifier.cs" />
     <Compile Include="GWavePoller.cs" />
     <Compile Include="GWaveSession.cs" />
@@ -91,6 +93,8 @@
     <Compile Include="PreferencesForm.Designer.cs">
       <DependentUpon>PreferencesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TraceLogger.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="Wave.cs" />
     <Compile Include="WaveEventArgs.cs" />
   </ItemGroup>

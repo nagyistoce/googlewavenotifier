@@ -37,13 +37,15 @@ namespace GoogleWaveNotifier
 
         protected void LoadPreferences()
         {
+            logLink.Text = TraceLogger.LogFileName;
             Text = string.Format("{0} Settings", Program.Title);
 
             autoStartBox.Checked = _autoStart.IsEnabled;
 
             emailBox.Text = Settings.Default.Email;
-            passwordBox.Text = Settings.Default.Password;
+            passwordBox.Text = Settings.Default.GetPassword();
             pollingIntervalBox.Value = (decimal)Settings.Default.PollInterval.TotalSeconds;
+            enableLoggingBox.Checked = Settings.Default.EnableLog;
 
             LoadAbout();
         }
@@ -65,21 +67,30 @@ namespace GoogleWaveNotifier
         protected void SavePreferences()
         {
             _autoStart.IsEnabled = autoStartBox.Checked;
-            
+
+            Trace.WriteLine("Saving preferences...", "Preferences");
             Settings.Default.Email = emailBox.Text;
-            Settings.Default.Password = passwordBox.Text;
+            Settings.Default.SetPassword(passwordBox.Text);
             Settings.Default.PollInterval = TimeSpan.FromSeconds((double)pollingIntervalBox.Value);
+            Settings.Default.EnableLog = enableLoggingBox.Checked;
             Settings.Default.Save();
+            Trace.WriteLine("Preferences saved.", "Preferences");
         }
 
         private void WebsiteLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(delegate { Process.Start(Program.Website); });
+            Utilities.Execute(Program.Website);
         }
 
         private void growlForWindowsLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(delegate { Process.Start("http://www.growlforwindows.com/"); });
+            Utilities.Execute("http://www.growlforwindows.com/");
+        }
+
+
+        private void logLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utilities.Execute(TraceLogger.LogPath);
         }
 
         protected override void OnClosed(EventArgs e)

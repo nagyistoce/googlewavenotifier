@@ -4,6 +4,7 @@ using Growl.Connector;
 using Growl.CoreLibrary;
 using System.Threading;
 using GoogleWaveNotifier.Properties;
+using System.Diagnostics;
 
 namespace GoogleWaveNotifier
 {
@@ -43,21 +44,28 @@ namespace GoogleWaveNotifier
                                         {
                                             Icon = _googlewavenotifiericon
                                         }, new[]
-                                                                                {
-                                                                                    new NotificationType("unreadwave", "Unread wave", _googlewaveicon, true),
-                                                                                    new NotificationType("error", "Error", _googlewaveicon, true),
-                                                                                });
+                                               {
+                                                   new NotificationType("unreadwave", "Unread wave", _googlewaveicon, true),
+                                                   new NotificationType("error", "Error", _googlewaveicon, true),
+                                               });
                 _lastResponse = null;
                 Monitor.Wait(_responseLocker, 1000);
                 if (_lastResponse != null && _lastResponse.IsOK)
+                {
+                    IsRegistered = true;
                     OnRegistered(EventArgs.Empty);
+                }
                 else
+                {
+                    IsRegistered = false;
                     OnRegisteringFailed(EventArgs.Empty);
+                }
             }
         }
 
         private void ConnectorOkResponse(Response response)
         {
+            Trace.WriteLine("Growl responded OK", "Growl");
             lock (_responseLocker)
             {
                 _lastResponse = response;
@@ -68,6 +76,7 @@ namespace GoogleWaveNotifier
 
         private void ConnectorErrorResponse(Response response)
         {
+            Trace.WriteLine(string.Format("Growl responded with an error: {0} {1}", response.ErrorCode, response.ErrorDescription), "Growl");
             lock (_responseLocker)
             {
                 _lastResponse = response;
