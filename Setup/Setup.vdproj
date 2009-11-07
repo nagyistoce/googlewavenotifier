@@ -52,12 +52,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_725B5AD8363B380DFE4221F4CBFFCC08"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_DFA7A4B679F4489A8BE69B20203C0229"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -77,6 +71,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_DEAB868D5FB6B8AD439CE68D979CEB0D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_725B5AD8363B380DFE4221F4CBFFCC08"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -124,7 +124,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\GoogleWaveNotifier-v1.1.msi"
+        "OutputFilename" = "8:Release\\GoogleWaveNotifier-v1.2.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -375,14 +375,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Google Wave Notifier"
-        "ProductCode" = "8:{5A4292F0-3A71-4A49-98C0-288FD439984D}"
-        "PackageCode" = "8:{739D3D46-0F64-4082-9081-42B7112D4A2B}"
+        "ProductCode" = "8:{83952F5E-DBC7-407E-A534-205D5AE90EAC}"
+        "PackageCode" = "8:{D1E837D1-AC67-415A-AAA4-7932BC91E01F}"
         "UpgradeCode" = "8:{B2599A90-03A4-4A3F-AAA0-353361996A53}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.0"
+        "ProductVersion" = "8:1.2.0"
         "Manufacturer" = "8:FrozenCow"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
