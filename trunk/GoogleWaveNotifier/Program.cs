@@ -80,6 +80,8 @@ namespace GoogleWaveNotifier
 
         private static void Main(string[] args)
         {
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
             // Upgrade the configuration file if this is the first run (for this version).
             if (Settings.Default.FirstRun)
             {
