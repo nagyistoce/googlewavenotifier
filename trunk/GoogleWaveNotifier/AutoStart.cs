@@ -41,7 +41,7 @@ namespace GoogleWaveNotifier
             if (location == null)
                 return;
 
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run", ApplicationName, location, RegistryValueKind.String);
+            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run", ApplicationName, "\"" + location + "\"", RegistryValueKind.String);
         }
 
         public void Disable()
