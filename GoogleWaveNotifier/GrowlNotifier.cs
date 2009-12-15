@@ -20,10 +20,12 @@ namespace GoogleWaveNotifier
 
         public GrowlNotifier()
         {
-            if (File.Exists("googlewave.png"))
-                _googlewaveicon = new BinaryData(File.ReadAllBytes("googlewave.png"));
-            if (File.Exists("googlewavenotifier.png"))
-                _googlewavenotifiericon = new BinaryData(File.ReadAllBytes("googlewavenotifier.png"));
+            string googleWaveLogoPath = Program.GetPath("googlewave.png");
+            if (File.Exists(googleWaveLogoPath))
+                _googlewaveicon = new BinaryData(File.ReadAllBytes(googleWaveLogoPath));
+            string googleWaveNotifierLogoPath = Program.GetPath("googlewavenotifier.png");
+            if (File.Exists(googleWaveNotifierLogoPath))
+                _googlewavenotifiericon = new BinaryData(File.ReadAllBytes(googleWaveNotifierLogoPath));
             _connector = new GrowlConnector();
             _connector.ErrorResponse += ConnectorErrorResponse;
             _connector.OKResponse += ConnectorOkResponse;
@@ -107,7 +109,10 @@ namespace GoogleWaveNotifier
         {
             EnsureRegistered();
             if (!IsRegistered)
+            {
                 OnNotificationFailed(new NotificationEventArgs(notification, callback));
+                return;
+            }
             lock (_responseLocker)
             {
                 _connector.Notify(notification, callback);

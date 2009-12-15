@@ -41,7 +41,15 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.accountTab = new System.Windows.Forms.TabPage();
             this.behaviourTab = new System.Windows.Forms.TabPage();
+            this.logLink = new System.Windows.Forms.LinkLabel();
+            this.enableLoggingBox = new System.Windows.Forms.CheckBox();
             this.autoStartBox = new System.Windows.Forms.CheckBox();
+            this.browserTab = new System.Windows.Forms.TabPage();
+            this.label4 = new System.Windows.Forms.Label();
+            this.browserBox = new System.Windows.Forms.ComboBox();
+            this.browserPathBrowseButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.browserPathBox = new System.Windows.Forms.TextBox();
             this.aboutTab = new System.Windows.Forms.TabPage();
             this.growlForWindowsLink = new System.Windows.Forms.LinkLabel();
             this.descriptionLabel = new System.Windows.Forms.Label();
@@ -49,12 +57,12 @@
             this.websiteLink = new System.Windows.Forms.LinkLabel();
             this.titleLabel = new System.Windows.Forms.Label();
             this.iconBox = new System.Windows.Forms.PictureBox();
-            this.enableLoggingBox = new System.Windows.Forms.CheckBox();
-            this.logLink = new System.Windows.Forms.LinkLabel();
+            this.openBrowserDialog = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.pollingIntervalBox)).BeginInit();
             this.tabControl.SuspendLayout();
             this.accountTab.SuspendLayout();
             this.behaviourTab.SuspendLayout();
+            this.browserTab.SuspendLayout();
             this.aboutTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconBox)).BeginInit();
             this.SuspendLayout();
@@ -168,12 +176,14 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.accountTab);
             this.tabControl.Controls.Add(this.behaviourTab);
+            this.tabControl.Controls.Add(this.browserTab);
             this.tabControl.Controls.Add(this.aboutTab);
             this.tabControl.Location = new System.Drawing.Point(6, 7);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(304, 130);
             this.tabControl.TabIndex = 0;
+            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
             // 
             // accountTab
             // 
@@ -205,6 +215,27 @@
             this.behaviourTab.Text = "Behaviour";
             this.behaviourTab.UseVisualStyleBackColor = true;
             // 
+            // logLink
+            // 
+            this.logLink.AutoSize = true;
+            this.logLink.Location = new System.Drawing.Point(170, 57);
+            this.logLink.Name = "logLink";
+            this.logLink.Size = new System.Drawing.Size(120, 13);
+            this.logLink.TabIndex = 4;
+            this.logLink.TabStop = true;
+            this.logLink.Text = "GoogleWaveNotifier.log";
+            this.logLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.logLinkClicked);
+            // 
+            // enableLoggingBox
+            // 
+            this.enableLoggingBox.AutoSize = true;
+            this.enableLoggingBox.Location = new System.Drawing.Point(10, 56);
+            this.enableLoggingBox.Name = "enableLoggingBox";
+            this.enableLoggingBox.Size = new System.Drawing.Size(96, 17);
+            this.enableLoggingBox.TabIndex = 3;
+            this.enableLoggingBox.Text = "Enable logging";
+            this.enableLoggingBox.UseVisualStyleBackColor = true;
+            // 
             // autoStartBox
             // 
             this.autoStartBox.AutoSize = true;
@@ -214,6 +245,69 @@
             this.autoStartBox.TabIndex = 0;
             this.autoStartBox.Text = "Automatically start with Windows";
             this.autoStartBox.UseVisualStyleBackColor = true;
+            // 
+            // browserTab
+            // 
+            this.browserTab.Controls.Add(this.label4);
+            this.browserTab.Controls.Add(this.browserBox);
+            this.browserTab.Controls.Add(this.browserPathBrowseButton);
+            this.browserTab.Controls.Add(this.label3);
+            this.browserTab.Controls.Add(this.browserPathBox);
+            this.browserTab.Location = new System.Drawing.Point(4, 22);
+            this.browserTab.Name = "browserTab";
+            this.browserTab.Size = new System.Drawing.Size(296, 104);
+            this.browserTab.TabIndex = 3;
+            this.browserTab.Text = "Browser";
+            this.browserTab.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 10);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(45, 13);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "Browser";
+            // 
+            // browserBox
+            // 
+            this.browserBox.DisplayMember = "Name";
+            this.browserBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.browserBox.Location = new System.Drawing.Point(54, 7);
+            this.browserBox.Name = "browserBox";
+            this.browserBox.Size = new System.Drawing.Size(239, 21);
+            this.browserBox.TabIndex = 16;
+            this.browserBox.SelectedIndexChanged += new System.EventHandler(this.browserBox_SelectedIndexChanged);
+            // 
+            // browserPathBrowseButton
+            // 
+            this.browserPathBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.browserPathBrowseButton.Location = new System.Drawing.Point(218, 34);
+            this.browserPathBrowseButton.Name = "browserPathBrowseButton";
+            this.browserPathBrowseButton.Size = new System.Drawing.Size(75, 24);
+            this.browserPathBrowseButton.TabIndex = 11;
+            this.browserPathBrowseButton.Text = "Browse...";
+            this.browserPathBrowseButton.UseVisualStyleBackColor = true;
+            this.browserPathBrowseButton.Click += new System.EventHandler(this.browserPathBrowseButton_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 40);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Path";
+            // 
+            // browserPathBox
+            // 
+            this.browserPathBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.browserPathBox.Location = new System.Drawing.Point(54, 37);
+            this.browserPathBox.Name = "browserPathBox";
+            this.browserPathBox.Size = new System.Drawing.Size(158, 20);
+            this.browserPathBox.TabIndex = 9;
+            this.browserPathBox.TextChanged += new System.EventHandler(this.browserPathBox_TextChanged);
             // 
             // aboutTab
             // 
@@ -288,26 +382,12 @@
             this.iconBox.TabIndex = 0;
             this.iconBox.TabStop = false;
             // 
-            // enableLoggingBox
+            // openBrowserDialog
             // 
-            this.enableLoggingBox.AutoSize = true;
-            this.enableLoggingBox.Location = new System.Drawing.Point(10, 56);
-            this.enableLoggingBox.Name = "enableLoggingBox";
-            this.enableLoggingBox.Size = new System.Drawing.Size(96, 17);
-            this.enableLoggingBox.TabIndex = 3;
-            this.enableLoggingBox.Text = "Enable logging";
-            this.enableLoggingBox.UseVisualStyleBackColor = true;
-            // 
-            // logLink
-            // 
-            this.logLink.AutoSize = true;
-            this.logLink.Location = new System.Drawing.Point(170, 57);
-            this.logLink.Name = "logLink";
-            this.logLink.Size = new System.Drawing.Size(120, 13);
-            this.logLink.TabIndex = 4;
-            this.logLink.TabStop = true;
-            this.logLink.Text = "GoogleWaveNotifier.log";
-            this.logLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.logLinkClicked);
+            this.openBrowserDialog.DefaultExt = "exe";
+            this.openBrowserDialog.Filter = "Executable files (*.exe)|*.exe";
+            this.openBrowserDialog.RestoreDirectory = true;
+            this.openBrowserDialog.Title = "Locate the executable for the browser";
             // 
             // PreferencesForm
             // 
@@ -330,6 +410,8 @@
             this.accountTab.PerformLayout();
             this.behaviourTab.ResumeLayout(false);
             this.behaviourTab.PerformLayout();
+            this.browserTab.ResumeLayout(false);
+            this.browserTab.PerformLayout();
             this.aboutTab.ResumeLayout(false);
             this.aboutTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconBox)).EndInit();
@@ -362,5 +444,12 @@
         private System.Windows.Forms.LinkLabel growlForWindowsLink;
         private System.Windows.Forms.LinkLabel logLink;
         private System.Windows.Forms.CheckBox enableLoggingBox;
+        private System.Windows.Forms.TabPage browserTab;
+        private System.Windows.Forms.Button browserPathBrowseButton;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox browserPathBox;
+        private System.Windows.Forms.OpenFileDialog openBrowserDialog;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox browserBox;
     }
 }

@@ -20,6 +20,7 @@ namespace GoogleWaveNotifier
         private static GrowlNotifier _growl;
         private static PreferencesForm _preferencesForm;
         private static object _pollLocker = new object();
+        private static string _applicationDirectory;
 
         #region Information
         public static string Title
@@ -78,9 +79,10 @@ namespace GoogleWaveNotifier
         }
         #endregion
 
+        [STAThread]
         private static void Main(string[] args)
         {
-            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            Environment.CurrentDirectory = _applicationDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
             // Upgrade the configuration file if this is the first run (for this version).
             if (Settings.Default.FirstRun)
@@ -102,6 +104,7 @@ namespace GoogleWaveNotifier
                                   Visible = true
                               };
             _notifyIcon.MouseDoubleClick += NotifyIconDoubleClick;
+            _notifyIcon.BalloonTipClicked += NotifyIconBalloonTipClicked;
 
             // Initialize notify-menu.
             _notifyIcon.ContextMenuStrip = new ContextMenuStrip()
@@ -182,9 +185,14 @@ namespace GoogleWaveNotifier
                 OpenGoogleWaveClicked(sender, e);
         }
 
+        static void NotifyIconBalloonTipClicked(object sender, EventArgs e)
+        {
+            OpenGoogleWaveClicked(sender, e);
+        }
+
         private static void OpenGoogleWaveClicked(object sender, EventArgs e)
         {
-            Utilities.Execute("https://wave.google.com/");
+            Utilities.OpenBrowser("https://wave.google.com/");
         }
 
         private static void PollerWaveChanged(object sender, WaveEventArgs e)
@@ -340,6 +348,11 @@ namespace GoogleWaveNotifier
             }
         }
 
+        public static string GetPath(string fileName)
+        {
+            return Path.Combine(_applicationDirectory, fileName);
+        }
+
         private static Icon CreateIcon(IconState status)
         {
             Icon result;
@@ -352,7 +365,7 @@ namespace GoogleWaveNotifier
                     g.InterpolationMode = InterpolationMode.HighQualityBilinear;
                     g.SmoothingMode = SmoothingMode.AntiAlias;
 
-                    string gwaveIcon = status.WaveEnabled ? "notify-googlewave.png" : "notify-googlewave-disabled.png";
+                    string gwaveIcon = GetPath(status.WaveEnabled ? "notify-googlewave.png" : "notify-googlewave-disabled.png");
                     using (Bitmap overlay = new Bitmap(gwaveIcon))
                     {
                         g.DrawImageUnscaled(overlay, 0, 0);
@@ -360,7 +373,7 @@ namespace GoogleWaveNotifier
 
                     if (status.GrowlEnabled)
                     {
-                        using (Bitmap overlay = new Bitmap("notify-growl.png"))
+                        using (Bitmap overlay = new Bitmap(GetPath("notify-growl.png")))
                         {
                             g.DrawImageUnscaled(overlay, 0, 0);
                         }
