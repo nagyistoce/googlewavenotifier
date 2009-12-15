@@ -31,9 +31,15 @@ namespace GoogleWaveNotifier
             // The password is encrypted, so decrypt it.
             string encryptedBase64 = password.Substring(11, password.Length - 11 - 12);
             byte[] encrypted = Convert.FromBase64String(encryptedBase64);
-            password = Encoding.ASCII.GetString(
-                ProtectedData.Unprotect(encrypted, EncryptionEntropy, DataProtectionScope.CurrentUser));
-            
+            try
+            {
+                password = Encoding.ASCII.GetString(ProtectedData.Unprotect(encrypted, EncryptionEntropy, DataProtectionScope.CurrentUser));
+            }
+            catch(CryptographicException)
+            {
+                return string.Empty;
+            }
+
             return password;
         }
 
