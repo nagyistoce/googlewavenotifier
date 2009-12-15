@@ -2,31 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GoogleWaveNotifier.Browser;
 using GoogleWaveNotifier.Properties;
 using System.Security.Cryptography;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace GoogleWaveNotifier
 {
     internal static class Extensions
     {
-        private static SymmetricAlgorithm GetCryptoAlgorithm()
-        {
-            var algorithm = Rijndael.Create();
-
-            // Sigh, suggestions are welcome...
-            var key = new byte[32];
-            for (int i = 0; i < key.Length; i++)
-                key[i] = (byte)i;
-            algorithm.Key = key;
-
-            var iv = new byte[16];
-            for (int i = 0; i < iv.Length; i++)
-                iv[i] = (byte)i;
-            algorithm.IV = iv;
-
-            return algorithm;
-        }
+        private static readonly byte[] EncryptionEntropy =
+            { 7, 23, 14, 55, 156, 103, 250, 19, 4, 37, 45, 121, 10, 176, 204, 67 };
 
         public static string GetPassword(this Settings settings)
         {
@@ -41,28 +28,42 @@ namespace GoogleWaveNotifier
                 return password;
             }
             
-            // The password is encrypted, so encrypt it.
+            // The password is encrypted, so decrypt it.
             string encryptedBase64 = password.Substring(11, password.Length - 11 - 12);
             byte[] encrypted = Convert.FromBase64String(encryptedBase64);
-            var algorithm = GetCryptoAlgorithm();
-            using (var decryptor = algorithm.CreateDecryptor())
-            {
-                byte[] decrypted = decryptor.TransformFinalBlock(encrypted, 0, encrypted.Length);
-                password = Encoding.ASCII.GetString(decrypted);
-            }
+            password = Encoding.ASCII.GetString(
+                ProtectedData.Unprotect(encrypted, EncryptionEntropy, DataProtectionScope.CurrentUser));
+            
             return password;
         }
 
         public static void SetPassword(this Settings settings, string password)
         {
             // Only save encrypted passwords.
-            var algorithm = GetCryptoAlgorithm();
             byte[] decrypted = Encoding.ASCII.GetBytes(password);
-            using (var encryptor = algorithm.CreateEncryptor())
-            {
-                byte[] encrypted = encryptor.TransformFinalBlock(decrypted, 0, decrypted.Length);
-                settings.Password = "<encrypted>" + Convert.ToBase64String(encrypted) + "</encrypted>";
-            }
+            byte[] encrypted = ProtectedData.Protect(decrypted, EncryptionEntropy, DataProtectionScope.CurrentUser);
+            settings.Password = "<encrypted>" + Convert.ToBase64String(encrypted) + "</encrypted>";
+        }
+
+        public static IBrowserApplication GetBrowser(this Settings settings)
+        {
+            string settingValue = settings.Browser;
+            if (string.IsNullOrEmpty(settingValue))
+                return BrowserManager.DefaultBrowser;
+            var match = Regex.Match(settingValue, @"^\[(?<Name>.*)\]$");
+            if (!match.Success)
+                return new CustomBrowserApplication { Name = "Custom", CommandLine = settingValue };
+            return BrowserManager.GetInstalledBrowser(match.Groups["Name"].Value) ?? BrowserManager.DefaultBrowser;
+        }
+
+        public static void SetBrowser(this Settings settings, IBrowserApplication browser)
+        {
+            browser = browser ?? BrowserManager.DefaultBrowser;
+            var customBrowser = browser as CustomBrowserApplication;
+            if (customBrowser != null)
+                settings.Browser = customBrowser.CommandLine;
+            else
+                settings.Browser = "[" + browser.Name + "]";
         }
     }
 }
