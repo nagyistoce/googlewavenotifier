@@ -24,10 +24,11 @@ namespace GoogleWaveNotifier.Browser
             DefaultBrowser = new DefaultBrowserApplication();
             PredefinedBrowsers = new[]
                                      {
-                                         new PredefinedBrowserApplication { Name = "Firefox", Executable = "firefox.exe" },
-                                         new PredefinedBrowserApplication { Name = "Google Chrome", Executable = "chrome.exe" },
-                                         new PredefinedBrowserApplication { Name = "Opera", Executable = "Opera.exe" },
-                                         new PredefinedBrowserApplication { Name = "Internet Explorer", Executable = "iexplore.exe" }
+                                         new PredefinedBrowserApplication { Name = "Firefox", RegistryLocation = @"HKEY_CLASSES_ROOT\FirefoxURL\shell\open\command" },
+                                         new PredefinedBrowserApplication { Name = "Google Chrome", RegistryLocation = @"HKEY_CLASSES_ROOT\ChromeHTML\shell\open\command" },
+                                         new PredefinedBrowserApplication { Name = "Opera", RegistryLocation = @"HKEY_CLASSES_ROOT\Opera.HTML\shell\open\command" },
+                                         new PredefinedBrowserApplication { Name = "Internet Explorer", RegistryLocation = @"HKEY_CLASSES_ROOT\htmlfile\shell\open\command" },
+                                         new PredefinedBrowserApplication { Name = "Safari", RegistryLocation = @"HKEY_CLASSES_ROOT\SafariURL\shell\open\command" }
                                      };
         }
 
