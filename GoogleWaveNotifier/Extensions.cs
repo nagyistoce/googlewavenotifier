@@ -66,8 +66,11 @@ namespace GoogleWaveNotifier
         {
             browser = browser ?? BrowserManager.DefaultBrowser;
             var customBrowser = browser as CustomBrowserApplication;
+            var installedBrowser = browser as InstalledBrowserApplication;
             if (customBrowser != null)
                 settings.Browser = customBrowser.CommandLine;
+            if (installedBrowser != null)
+                settings.Browser = "[" + installedBrowser.Key + "]";
             else
                 settings.Browser = "[" + browser.Name + "]";
         }
