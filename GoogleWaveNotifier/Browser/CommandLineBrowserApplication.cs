@@ -14,8 +14,10 @@ namespace GoogleWaveNotifier.Browser
             string arguments;
 
             Match match;
-            if ((match = Regex.Match(commandLine, "^\"(?<FilePath>[^\"]*)\"\\s*(?<Arguments>.*)$")).Success ||
-                ((match = Regex.Match(commandLine, "^(?<FilePath>\\S+)\\s*(?<Arguments>.*)$")).Success))
+            if (!File.Exists(commandLine) && (
+                (match = Regex.Match(commandLine, "^\"(?<FilePath>[^\"]*)\"\\s*(?<Arguments>.*)$")).Success ||
+                ((match = Regex.Match(commandLine, "^(?<FilePath>\\S+)\\s*(?<Arguments>.*)$")).Success)
+                ))
             {
                 filePath = match.Groups["FilePath"].Value;
                 arguments = match.Groups["Arguments"].Value;
