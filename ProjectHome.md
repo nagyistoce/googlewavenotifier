@@ -1,0 +1,2 @@
+An application that notifies for unread waves on your Google Wave account. For notifications it is recommended to use Growl for Windows, but it can also use Windows' balloons.
+At the moment it retrieves unread waves by polling at an configurable interval.
